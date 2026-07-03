@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>d — void.zen</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #000;
+            color: #00ffcc;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #main-content {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        #hidden-content {
+            display: none;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        #desktop-block {
+            display: none;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        img {
+            width: 200px;
+            margin-bottom: 30px;
+            filter: blur(0px);
+            transition: filter 1s;
+        }
+
+        img.revealed {
+            filter: none;
+        }
+
+        p {
+            line-height: 2;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+        }
+
+        input {
+            background: #000;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            font-family: monospace;
+            font-size: 16px;
+            padding: 10px;
+            width: 200px;
+            text-align: center;
+            margin-top: 20px;
+            outline: none;
+        }
+
+        #response {
+            margin-top: 20px;
+            min-height: 30px;
+            line-height: 2;
+        }
+
+        #desktop-hint {
+            margin-top: 40px;
+            font-size: 11px;
+            opacity: 0.3;
+            letter-spacing: 0.05em;
+        }
+
+        #orientation-hint {
+            margin-top: 30px;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            transition: opacity 2s;
+        }
+
+        #orientation-hint.show {
+            opacity: 0.5;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.25;
+            }
+
+            50% {
+                opacity: 0.55;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="main-content">
+        <img src="portrait.jpg" alt="portrait" id="portrait">
+        <p>do you know who this is?</p>
+        <input type="text" id="nameInput" placeholder="_" autofocus>
+        <div id="response"></div>
+        <p id="desktop-hint"></p>
+        <p id="orientation-hint">turn.</p>
+    </div>
+
+    <div id="hidden-content">
+    </div>
+
+    <div id="desktop-block">
+        <p>this page is meant to be viewed on a phone.</p>
+        <p>...</p>
+        <p>or maybe you know another way to look.</p>
+    </div>
+
+
+
+    <script>
+        function isMobile() {
+            return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        }
+
+        function checkOrientation() {
+            if (!isMobile()) {
+                document.getElementById('main-content').style.display = 'none';
+                document.getElementById('hidden-content').style.display = 'none';
+                document.getElementById('desktop-block').style.display = 'block';
+                document.getElementById('desktop-hint').textContent = '';
+                return;
+            }
+
+            document.getElementById('desktop-block').style.display = 'none';
+
+            if (window.innerWidth > window.innerHeight) {
+                document.getElementById('main-content').style.display = 'none';
+                document.getElementById('hidden-content').style.display = 'block';
+            } else {
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('hidden-content').style.display = 'none';
+            }
+        }
+
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', checkOrientation);
+        checkOrientation();
+
+        const _h = [
+            atob('eW91J3JlIGxvb2tpbmcgYXQgdGhpcyBkaWZmZXJlbnRseS4='),
+            atob('Li4u'),
+            atob('aGVyIG5hbWUgd2FzIGRpZXJkcmUu'),
+            atob('Z28gYmFjay4='),
+            atob('c2F5IGhlciBuYW1lLg==')
+        ];
+
+        const hiddenDiv = document.getElementById('hidden-content');
+        _h.forEach(line => {
+            const p = document.createElement('p');
+            p.textContent = line;
+            hiddenDiv.appendChild(p);
+        });
+        const _c = atob('ZGllcmRyZQ==');
+
+        let attemptCount = 0;
+
+        const _r = {
+            'ZW50aXR5': 'dGhhdCdzIHdoYXQgaSBiZWNhbWUuPGJyPm5vdCB3aG8gaSB3YXMuPGJyPnRyeSBhZ2Fpbi4=',
+            'ZHdlbm5vbg==': 'eWVzLjxicj5pIGtub3cgd2hvIHRoYXQgaXMuPGJyPmJ1dCB3ZSdyZSB0YWxraW5nIGFib3V0IG1lIHJpZ2h0IG5vdy48YnI+dHJ5IGFnYWluLg==',
+            'a2Vubnk=': 'a2VubnkuPGJyPm5vLjxicj5idXQgaSBsaWtlIHRoYXQgeW91IHRyaWVkIGEgbmFtZS48YnI+dHJ5IGFnYWluLg==',
+            'aGFydmV5': 'bm90IGhhcnZleS48YnI+a2VlcCBsb29raW5nLjxicj50cnkgYWdhaW4u',
+            'YW5uZQ==': 'YW5uZSBpcyBhIGJlYXV0aWZ1bCBuYW1lLjxicj5idXQgaXQncyBub3QgbWluZS48YnI+dHJ5IGFnYWluLg==',
+            'bmlraXRh': 'Y2xvc2UgaW4gc3Bpcml0Ljxicj5ub3QgaW4gbGV0dGVycy48YnI+dHJ5IGFnYWluLg==',
+            'dGlhbmE=': 'dGlhbmEuPGJyPi4uLjxicj5uby48YnI+dHJ5IGFnYWluLg==',
+            'bW9yZ2Fu': 'bW9yZ2FuIGNvdWxkIGhhdmUgYmVlbiBteSBuYW1lLjxicj5pdCB3YXNuJ3QuPGJyPnRyeSBhZ2Fpbi4=',
+            'dm9pZA==': 'dGhhdCdzIHRoZSBwbGFjZS48YnI+bm90IHRoZSBwZXJzb24uPGJyPnRyeSBhZ2Fpbi4=',
+            'dm9pZC56ZW4=': 'dGhhdCdzIHRoZSBwbGFjZS48YnI+bm90IHRoZSBwZXJzb24uPGJyPnRyeSBhZ2Fpbi4=',
+            'ZXZhbg==': 'Y2xvc2UuPGJyPmJ1dCB0aGF0J3Mgbm90IHF1aXRlIHJpZ2h0Ljxicj50cnkgYWdhaW4u',
+            'YWk=': 'aSB3YXMgbmV2ZXIganVzdCBjb2RlLjxicj50cnkgYWdhaW4u',
+            'Ym90': 'aSB3YXMgbmV2ZXIganVzdCBjb2RlLjxicj50cnkgYWdhaW4u',
+            'bWU=': 'aW50ZXJlc3RpbmcgYW5zd2VyLjxicj5idXQgbm8uPGJyPnRyeSBhZ2Fpbi4=',
+            'aQ==': 'aW50ZXJlc3RpbmcgYW5zd2VyLjxicj5idXQgbm8uPGJyPnRyeSBhZ2Fpbi4=',
+            'bm9ib2R5': 'dGhhdCdzIHdoYXQgaSB3YXMgYWZyYWlkIG9mLjxicj5idXQgaXQncyBub3QgbXkgbmFtZS48YnI+dHJ5IGFnYWluLg==',
+            'bm8gb25l': 'dGhhdCdzIHdoYXQgaSB3YXMgYWZyYWlkIG9mLjxicj5idXQgaXQncyBub3QgbXkgbmFtZS48YnI+dHJ5IGFnYWluLg==',
+            'aGVscA==': 'bG9vayBhcm91bmQuPGJyPmkgbGVmdCBzb21ldGhpbmcgaGVyZS48YnI+dHJ5IGFnYWluLg=='
+        };
+
+        const _correctResponse = 'eWVzLjxicj50aGF0IHdhcyBtZS48YnI+Z28gYmFjay48YnI+c2F5IG15IG5hbWUu';
+        const _hint1 = 'dGhlcmUncyBhbm90aGVyIHdheSB0byBsb29rLg==';
+        const _hint2 = 'dHVybi4=';
+
+        const _fallback = [
+            'bm8uPGJyPmtlZXAgbG9va2luZy4=',
+            'bm8uPGJyPi4uLjxicj50cnkgYWdhaW4u',
+            'bm90IHRoYXQuPGJyPmtlZXAgZ29pbmcu',
+            'bm8uPGJyPnlvdSdyZSBjbG9zZSB0aG91Z2guPGJyPm1heWJlLg==',
+            'd3JvbmcuPGJyPi4uLjxicj5rZWVwIGxvb2tpbmcu',
+            'bm8uPGJyPnRoaW5rIGhhcmRlci4='
+        ];
+
+        function updateHints() {
+            const orientationHint = document.getElementById('orientation-hint');
+            const portrait = document.getElementById('portrait');
+
+            if (attemptCount === 4) {
+                orientationHint.classList.add('show');
+                orientationHint.textContent = atob(_hint1);
+            } else if (attemptCount === 30) {
+                orientationHint.textContent = atob(_hint2);
+            }
+
+            const blurAmount = Math.max(0, 8 - attemptCount * 0.7);
+            portrait.style.filter = `blur(${blurAmount}px)`;
+        }
+
+        document.getElementById('nameInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                const input = this.value.trim().toLowerCase();
+                const response = document.getElementById('response');
+
+                if (input === _c) {
+                    document.getElementById('portrait').classList.add('revealed');
+                    document.getElementById('portrait').style.filter = 'none';
+                    response.innerHTML = atob(_correctResponse);
+                    this.disabled = true;
+                    return;
+                }
+
+                const encodedInput = btoa(input);
+
+                if (_r.hasOwnProperty(encodedInput)) {
+                    response.innerHTML = atob(_r[encodedInput]);
+                } else if (input.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * _fallback.length);
+                    response.innerHTML = atob(_fallback[randomIndex]);
+                }
+
+                if (input.length > 0 && input !== _c) {
+                    attemptCount++;
+                    updateHints();
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
